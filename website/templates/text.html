@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Text Editor</title>
+</head>
+<body>
+    <h1>Real-time Text Editor</h1>
+    <textarea id="editor" rows="10" cols="50">Initial text here...</textarea>
+    <hr>
+    <div>
+        <h2>Current Text:</h2>
+        <p id="currentText">Initial text here...</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Function to update the current text
+        function updateCurrentText() {
+            var currentTextElement = document.getElementById("currentText");
+            var editorValue = document.getElementById("editor").value;
+            currentTextElement.textContent = editorValue;
+
+            // Send updated text to the server
+            socket.emit('update_text', { text: editorValue });
+        }
+
+        // Call updateCurrentText initially
+        updateCurrentText();
+
+        // Function to handle text update from server
+        socket.on('text_updated', function(data) {
+            var currentTextElement = document.getElementById("currentText");
+            currentTextElement.textContent = data.text;
+        });
+
+        // Add event listener to the editor to update the current text when edited
+        document.getElementById("editor").addEventListener("input", updateCurrentText);
+    </script>
+</body>
+</html>
